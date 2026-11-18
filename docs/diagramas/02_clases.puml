@@ -1,0 +1,214 @@
+@startuml 02_clases
+!include estilo.iuml
+skinparam LineType polyline
+skinparam nodesep 40
+skinparam ranksep 55
+hide empty members
+mainframe **class** Modelo de dominio – Vista lógica
+
+package "Pacientes y recetas" {
+  class Pacientes {
+    - rutHmac: str
+    - rutEnmascarado: str
+    - nombre: str
+    - tramoFonasa: str
+    + programasVigentes(): List<ProgramasSalud>
+    + recetasVigentes(hoy: date): List<Recetas>
+  }
+  class ProgramasSalud {
+    - nombre: str
+    - esGes: bool
+    + inscribir(p: Pacientes, desde: date): void
+  }
+  class Recetas {
+    - folio: str
+    - fechaEmision: date
+    - esRetenida: bool
+    - estado: EstadosReceta
+    + estaVigente(hoy: date): bool
+    + exigirVigencia(hoy: date): void
+    + contieneControlados(): bool
+    + recalcularEstado(): void
+  }
+  class DetallesReceta {
+    - cantPrescrita: int
+    - cantEntregada: int
+    - posologia: str
+    + pendiente(): int
+    + registrarEntrega(n: int): void
+    + revertirEntrega(n: int): void
+  }
+  enum EstadosReceta {
+    PENDIENTE
+    PARCIAL
+    DISPENSADA
+    ANULADA
+  }
+}
+
+package "Inventario" {
+  class Medicamentos {
+    - codigo: str
+    - nombre: str
+    - unidadesEnvase: int
+    - esControlado: bool
+    - umbralCritico: int
+    - activo: bool
+    + stockDispensable(hoy: date): int
+    + requiereFraccion(cant: int): bool
+    + darDeBaja(motivo: str, u: Usuarios): void
+    + reactivar(u: Usuarios): void
+  }
+  class Lotes {
+    - codigoLote: str
+    - fechaVencimiento: date
+    - unidadesIngresadas: int
+    - unidadesDisp: int
+    - estadoRegistro: str
+    + diasParaVencer(hoy: date): int
+    + estado(hoy: date): EstadosLote
+    + esDispensable(hoy: date): bool
+    + descontar(n: int, u: Usuarios): MovimientosStock
+    + reponer(n: int, u: Usuarios): MovimientosStock
+    + ajustar(unidades: int, motivo: str): MovimientosStock
+    + anular(motivo: str, u: Usuarios): void
+    + retirarAMerma(n: int, motivo: str): Mermas
+  }
+  class Ubicaciones {
+    - codigo: str
+    - tipo: str
+    - activo: bool
+    + admiteControlados(): bool
+    + darDeBaja(motivo: str): void
+  }
+  class MovimientosStock {
+    - tipo: TiposMovimiento
+    - cantidad: int
+    - saldoResultante: int
+    - motivo: str
+    - fechaHora: datetime
+    + esEntrada(): bool
+  }
+  class Mermas {
+    - cantidad: int
+    - motivo: str
+    - estadoDevolucion: str
+    + registrarDevolucion(): void
+  }
+  class Remesas <<planificada>> {
+    - nroGuia: str
+    - ordenCompra: str
+    - fechaRecepcion: date
+    - estado: str
+    + conciliar(): List<Diferencias>
+    + anular(motivo: str, u: Usuarios): void
+  }
+  class DetallesRemesa <<planificada>> {
+    - cantEsperada: int
+    - cantRecibida: int
+    + diferencia(): int
+  }
+  class PlanificadorFEFO <<service>> {
+    + planificar(lotes, med, cant, hoy): List<Asignacion>
+    + validarLoteEscaneado(lotes, med, codigo, plan, hoy): Asignacion
+  }
+  enum EstadosLote {
+    VIGENTE
+    ALERTA
+    NO_DISPENSABLE
+    RETIRO_OBLIGATORIO
+    AGOTADO
+    ALERTA_SANITARIA
+    MERMA
+    ANULADO
+  }
+}
+
+package "Dispensación y controlados" {
+  class Dispensaciones {
+    - fechaHora: datetime
+    - rutRetiraHmac: str
+    - relacion: str
+    - claveIdempotencia: str
+    - estado: str
+    - motivoAnulacion: str
+    + confirmar(): void
+    + anular(motivo: str, qf: Usuarios): void
+    + rotulos(): List<Rotulos>
+  }
+  class DetallesDispensacion {
+    - cantidad: int
+    + rotulo(): Rotulos
+  }
+  class LibrosControlados <<service>> {
+    + registrarSalida(d: DetallesDispensacion, qf: Usuarios): AsientosControlados
+    + rectificar(a: AsientosControlados, motivo: str): AsientosControlados
+    + verificarCadena(): bool
+  }
+  class AsientosControlados {
+    - nroAsiento: int
+    - tipo: str
+    - contenido: dict
+    - hashPrevio: str
+    - hashActual: str
+    + calcularHash(): str
+  }
+}
+
+package "Seguridad y auditoría" {
+  class Usuarios {
+    - rut: str
+    - nombre: str
+    - activo: bool
+    - intentosFallidos: int
+    - bloqueadoHasta: datetime
+    + autenticar(clave: str): Token
+    + verificarPin(pin: str): bool
+    + tienePermiso(p: Permisos): bool
+    + darDeBaja(motivo: str, admin: Usuarios): void
+  }
+  class Roles {
+    - nombre: str
+    - descripcion: str
+    + permisos(): Set<Permisos>
+    + incluye(p: Permisos): bool
+  }
+  class EventosPendientes {
+    - tipoEvento: str
+    - entidad: str
+    - payload: dict
+    - creadoEn: datetime
+    - publicadoEn: datetime
+    + marcarPublicado(): void
+  }
+}
+
+Pacientes "0..*" -- "0..*" ProgramasSalud : inscrito en
+Pacientes "1" -- "0..*" Recetas : tiene
+Recetas "1" *-- "1..*" DetallesReceta
+DetallesReceta "0..*" --> "1" Medicamentos : prescribe
+Recetas ..> EstadosReceta
+
+Medicamentos "0..*" --> "0..1" ProgramasSalud : pertenece a
+Medicamentos "1" -- "0..*" Lotes : existencias
+Lotes "0..*" --> "1" Ubicaciones : en
+Remesas "1" *-- "1..*" DetallesRemesa
+DetallesRemesa "1" -- "1..*" Lotes : origina
+DetallesRemesa "0..*" --> "1" Medicamentos
+Lotes "1" *-- "1..*" MovimientosStock : kardex
+Lotes "1" -- "0..*" Mermas : retiro
+Lotes ..> EstadosLote
+PlanificadorFEFO ..> Lotes : «use»
+
+Recetas "1" -- "0..*" Dispensaciones : se entrega en
+Dispensaciones "1" *-- "1..*" DetallesDispensacion
+DetallesDispensacion "0..*" --> "1" DetallesReceta : cubre
+DetallesDispensacion "0..*" --> "1" Lotes : desde
+LibrosControlados "1" *-- "0..*" AsientosControlados
+AsientosControlados "0..*" --> "1" DetallesDispensacion : respalda
+AsientosControlados "0..1" --> "0..1" AsientosControlados : rectifica
+
+Usuarios "0..*" --> "1" Roles
+Usuarios "1" -- "0..*" Dispensaciones : registra
+Usuarios "1" -- "0..*" EventosPendientes : genera
+@enduml

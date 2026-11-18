@@ -1,0 +1,17 @@
+[project]
+name = "sisgef-asistencial"
+version = "0.3.0"
+description = "SISGEF-Asistencial: gestión de farmacia asistencial (FEFO, unidosis, libro digital de controlados)."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["e2e: pruebas de extremo a extremo con navegador (más lentas)"]
+filterwarnings = ["ignore::DeprecationWarning:fastapi.testclient", "ignore::DeprecationWarning:starlette"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/seed.py"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]

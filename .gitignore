@@ -1,0 +1,26 @@
+# Secretos y configuración local
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Bases de datos locales de desarrollo
+*.db
+*.db-journal
+*.db.respaldo-*
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+~$*
+
+# Herramientas descargadas (no se versionan)
+docs/diagramas/herramientas/

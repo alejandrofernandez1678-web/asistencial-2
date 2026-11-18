@@ -1,0 +1,41 @@
+@startuml 03_estados_lote
+!include estilo.iuml
+skinparam LineType polyline
+hide empty description
+mainframe **stm** Lotes – Diagrama de máquina de estados (vista lógica)
+
+state c <<choice>>
+[*] --> c : ingresarLote()
+
+state "Dispensable" as Dispensable {
+  state "Vigente" as Vigente
+  state "En alerta" as EnAlerta
+  Vigente --> EnAlerta : [días ≤ 60] / RN-01
+  Dispensable : ajustar(unidades, motivo) / registra AJUSTE
+}
+state "No dispensable" as NoDispensable
+state "Retiro obligatorio" as Retiro
+state "Agotado" as Agotado
+state "Alerta sanitaria" as AlertaSanitaria
+state "En merma" as Merma
+state "Anulado" as Anulado
+
+c --> Vigente : [días > 60]
+c --> EnAlerta : [30 < días ≤ 60]
+c --> NoDispensable : [14 < días ≤ 30]
+c --> Retiro : [días ≤ 14]
+
+EnAlerta --> NoDispensable : [días ≤ 30] / RN-02
+NoDispensable --> Retiro : [días ≤ 14] / RN-03
+Dispensable --> Agotado : descontar(n) [unidades = 0]
+Agotado --> Dispensable : reponer(n) [anulación de dispensación]
+Dispensable --> AlertaSanitaria : alertaISP()
+Dispensable --> Anulado : anular(motivo) [sin dispensaciones]
+NoDispensable --> Merma : retirarAMerma(n) [unidades = 0]
+Retiro --> Merma : retirarAMerma(n) [unidades = 0]
+AlertaSanitaria --> Merma : retirarAMerma(n) [unidades = 0]
+
+Agotado --> [*]
+Merma --> [*]
+Anulado --> [*]
+@enduml

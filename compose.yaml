@@ -1,0 +1,22 @@
+# PostgreSQL 16 local para desarrollo (equivalente al RDS PostgreSQL 16 de producción).
+# Uso:  podman compose up -d      (o: docker compose up -d)
+# Solo para desarrollo: la contraseña no es secreta. En AWS la credencial vive en Secrets Manager.
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: sisgef-postgres
+    environment:
+      POSTGRES_DB: sisgef
+      POSTGRES_USER: sisgef
+      POSTGRES_PASSWORD: sisgef_local
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - sisgef-datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sisgef -d sisgef"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  sisgef-datos:

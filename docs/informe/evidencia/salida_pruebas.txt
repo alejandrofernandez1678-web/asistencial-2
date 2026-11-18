@@ -1,0 +1,93 @@
+$ pytest --cov
+============================= test session starts ==============================
+platform linux -- Python 3.15.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/koshi/Escritorio/Proyecto_Integrado/backend
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, anyio-4.16.0
+collected 117 items
+
+tests/e2e/test_e2e_interfaz.py ...........                               [  9%]
+tests/integration/test_api_dispensacion.py ..................            [ 24%]
+tests/integration/test_api_inventario.py ..........                      [ 33%]
+tests/integration/test_api_seguridad.py .........                        [ 41%]
+tests/integration/test_concurrencia.py s                                 [ 41%]
+tests/unit/test_reglas_dominio.py ...................................... [ 74%]
+...........                                                              [ 83%]
+tests/unit/test_seguridad.py ...................                         [100%]
+
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.15.2-final-0 ________________
+
+Name                            Stmts   Miss  Cover
+---------------------------------------------------
+app/__init__.py                     0      0   100%
+app/api/__init__.py                 0      0   100%
+app/api/admin.py                   28      5    82%
+app/api/auth.py                    22      1    95%
+app/api/deps.py                    37      0   100%
+app/api/dispensacion.py            47      7    85%
+app/api/inventario.py              71      5    93%
+app/api/schemas.py                 49      0   100%
+app/config.py                      28      5    82%
+app/db.py                          25      1    96%
+app/domain/__init__.py              0      0   100%
+app/domain/errores.py               5      0   100%
+app/domain/fefo.py                 41      0   100%
+app/domain/libro.py                18      0   100%
+app/domain/lotes.py                45      0   100%
+app/domain/recetas.py              17      0   100%
+app/domain/rut.py                  32      1    97%
+app/main.py                        42      3    93%
+app/models.py                     210      1    99%
+app/reloj.py                        5      0   100%
+app/repositories/__init__.py        0      0   100%
+app/repositories/lotes.py          11      0   100%
+app/security/__init__.py            0      0   100%
+app/security/claves.py             24      0   100%
+app/security/rbac.py               17      0   100%
+app/security/tokens.py             11      0   100%
+app/services/__init__.py            0      0   100%
+app/services/auditoria.py           4      0   100%
+app/services/autenticacion.py      40      0   100%
+app/services/catalogo.py           92     20    78%
+app/services/dispensacion.py      154     14    91%
+app/services/inventario.py        113     10    91%
+---------------------------------------------------
+TOTAL                            1188     73    94%
+================== 116 passed, 1 skipped, 1 warning in 11.93s ==================
+
+$ SISGEF_PRUEBAS_DATABASE_URL=postgresql+psycopg://sisgef:***@localhost:55432/sisgef \
+    pytest tests/unit tests/integration      # PostgreSQL 16 en Podman
+============================= test session starts ==============================
+platform linux -- Python 3.15.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/koshi/Escritorio/Proyecto_Integrado/backend
+configfile: pyproject.toml
+plugins: cov-7.1.0, anyio-4.16.0
+collected 106 items
+
+tests/unit/test_reglas_dominio.py ...................................... [ 35%]
+...........                                                              [ 46%]
+tests/unit/test_seguridad.py ...................                         [ 64%]
+tests/integration/test_api_dispensacion.py ..................            [ 81%]
+tests/integration/test_api_inventario.py ..........                      [ 90%]
+tests/integration/test_api_seguridad.py .........                        [ 99%]
+tests/integration/test_concurrencia.py .                                 [100%]
+
+
+======================== 106 passed, 1 warning in 7.79s ========================
+
+$ bandit -c pyproject.toml -r app
+	No issues identified.
+	Total lines of code: 1719
+		Low: 0
+		Medium: 0
+		High: 0
+
+$ python -m tests.rendimiento.medir_fefo
+Python 3.15.2 · Linux x86_64
+   Lotes   p50 (ms)   p95 (ms)
+    1000       0.02       0.03
+   10000       0.23       0.26
+   50000       1.34       1.51

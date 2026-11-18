@@ -1,0 +1,57 @@
+@startuml 07_paquetes
+!include estilo.iuml
+skinparam LineType polyline
+mainframe **pkg** Organización del código fuente (vista de desarrollo)
+
+package frontend {
+  package pantallas <<app.js: pantallas y componentes>> {
+  }
+  package vendor <<React 18, htm>> {
+  }
+  package estilos <<estilos.css: tokens de diseño>> {
+  }
+}
+
+package backend {
+  package app {
+    package api <<routers, esquemas>> {
+    }
+    package services <<casos de uso>> {
+    }
+    package repositories <<consultas>> {
+    }
+    package domain <<reglas de negocio>> {
+    }
+    package security <<claves, tokens, RBAC>> {
+    }
+    package models <<ORM>> {
+    }
+    package "config / db" <<configuración>> {
+    }
+  }
+  package tests <<unit, integration, e2e>> {
+  }
+}
+
+pantallas ..> vendor : <<import>>
+pantallas ..> estilos : <<import>>
+
+api ..> services : <<import>>
+api ..> security : <<import>>
+api ..> models : <<import>>
+services ..> domain : <<import>>
+services ..> repositories : <<import>>
+services ..> models : <<import>>
+services ..> security : <<import>>
+repositories ..> domain : <<import>>
+repositories ..> models : <<import>>
+models ..> "config / db" : <<import>>
+security ..> "config / db" : <<import>>
+tests ..> api : <<import>>
+tests ..> domain : <<import>>
+
+note bottom of domain
+  domain no importa ningún otro paquete:
+  las reglas se prueban sin base de datos ni red.
+end note
+@enduml

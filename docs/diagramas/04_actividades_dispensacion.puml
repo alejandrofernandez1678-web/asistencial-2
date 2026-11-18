@@ -1,0 +1,53 @@
+@startuml 04_actividades_dispensacion
+!include estilo.iuml
+skinparam ConditionEndStyle hline
+mainframe **act** Dispensar receta (vista de procesos)
+
+|Técnico de farmacia|
+start
+repeat
+  :Ingresar RUT del paciente;
+  |SISGEF-Asistencial|
+  :Validar RUT (módulo 11)\ny buscar paciente;
+backward :Mostrar error de RUT;
+repeat while () is ([RUT inválido o sin paciente]) not ([RUT válido])
+:Listar recetas del paciente;
+|Técnico de farmacia|
+:Seleccionar receta;
+|SISGEF-Asistencial|
+if () then ([emitida hace más de 30 días])
+  :Rechazar receta vencida (RN-04);
+  |Técnico de farmacia|
+  :Informar al paciente;
+  stop
+else ([vigente])
+endif
+|SISGEF-Asistencial|
+:Calcular plan FEFO\n(lote y casillero);
+repeat
+  |Técnico de farmacia|
+  :Escanear lote con lector;
+  |SISGEF-Asistencial|
+  :Validar lote contra el plan (RN-06);
+backward :Indicar lote y casillero\ncorrectos;
+repeat while () is ([lote distinto al plan]) not ([lote correcto])
+if () then ([incluye controlados])
+  |Técnico de farmacia|
+  :Registrar RUT y relación\nde quien retira;
+  |Químico farmacéutico|
+  :Firmar con PIN;
+  |SISGEF-Asistencial|
+  :Validar firma y asentar en\nlibro digital (hash);
+else ([sin controlados])
+endif
+|SISGEF-Asistencial|
+:Descontar stock, registrar kardex\ny evento (una transacción);
+fork
+  :Generar rótulo de unidosis;
+fork again
+  :Publicar evento de auditoría\n(asíncrono, outbox);
+end fork
+|Técnico de farmacia|
+:Entregar medicamento al paciente;
+stop
+@enduml

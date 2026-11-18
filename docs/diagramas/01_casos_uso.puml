@@ -1,0 +1,49 @@
+@startuml 01_casos_uso
+!include estilo.iuml
+skinparam LineType polyline
+left to right direction
+mainframe **uc** SISGEF-Asistencial – Vista de escenarios
+
+actor "Técnico de\nfarmacia" as TEC
+actor "Químico\nfarmacéutico" as QF
+actor "Bodeguero" as BOD
+actor "Administrador" as ADM
+
+' El Q.F. puede hacer todo lo que hace el técnico (generalización de actores)
+TEC <|-- QF
+
+rectangle "Sistema SISGEF-Asistencial" {
+  usecase "E1 Dispensar receta\ncon unidosis (HU-01)" as E1
+  usecase "E2 Validar lote\nsegún FEFO (HU-04)" as E2
+  usecase "E3 Despachar controlado\ny asentar libro (HU-02)" as E3
+  usecase "E7 Consultar panel\npor programa (HU-05)" as E7
+  usecase "E10 Anular\ndispensación" as E10
+  usecase "E8 Rastrear lote\n→ pacientes (HU-09)" as E8
+  usecase "E4 Recepcionar remesa\nCENABAST (HU-03)" as E4
+  usecase "E11 Corregir o anular\nlote mal ingresado" as E11
+  usecase "E6 Retirar lote\na merma (HU-07)" as E6
+  usecase "E5 Auditar estantería\ncon PDA (HU-08)" as E5
+  usecase "E9 Gestionar usuarios\ny roles (HU-06)" as E9
+  usecase "E12 Dar de baja\nmedicamento" as E12
+}
+
+TEC -- E1
+TEC -- E7
+TEC -- E5
+E1 ..> E2 : <<include>>
+E3 ..> E1 : <<extend>>\n[receta con controlado]
+
+QF -- E3
+QF -- E10
+QF -- E8
+QF -- E12
+
+BOD -- E4
+BOD -- E11
+BOD -- E6
+BOD -- E5
+
+ADM -- E9
+ADM -- E12
+ADM -- E7
+@enduml

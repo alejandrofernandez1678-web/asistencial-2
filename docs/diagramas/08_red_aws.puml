@@ -1,0 +1,77 @@
+@startuml 08_red_aws
+!include estilo.iuml
+skinparam LineType polyline
+skinparam rectangle {
+  FontStyle bold
+}
+mainframe **dep** Arquitectura de red en AWS (complemento de la vista física)
+
+rectangle "CESFAM (red del establecimiento)" as CESFAM #F7F9F8 {
+  node "PC ventanilla\n(navegador)" as PC
+  node "PDA / lector\n(Wi-Fi)" as PDA
+}
+
+rectangle "Servicios globales" as GLOBAL #FFF4E5 {
+  node "Route 53\nsisgef.cesfam.cl" as R53
+  node "CloudFront + AWS WAF\nTLS 1.2/1.3" as CF
+  node "Cognito User Pool\nMFA TOTP" as COG
+  node "S3 frontend\n(origen privado, OAC)" as S3F
+}
+
+rectangle "Región us-east-1 · VPC 10.0.0.0/16" as VPC #F2F6FB {
+  node "Internet Gateway" as IGW
+  rectangle "AZ us-east-1a" as AZA #FFFFFF {
+    rectangle "Pública 10.0.0.0/24\nRT: 0.0.0.0/0 → IGW" as PUBA #E3F3E7 {
+      node "ALB (nodo a)\nsg-alb: 443 desde CloudFront" as ALBA
+      node "NAT Gateway a" as NATA
+    }
+    rectangle "Privada app 10.0.10.0/24\nRT: 0.0.0.0/0 → NAT a" as APPA #EAF0FA {
+      node "EC2 API a (Docker)\nsg-app: 8000 desde sg-alb" as EC2A
+    }
+    rectangle "Privada datos 10.0.20.0/24\nRT: solo local" as DATA #FBE4E2 {
+      database "RDS PostgreSQL 16\nprimaria\nsg-db: 5432 desde sg-app" as RDSA
+    }
+  }
+  rectangle "AZ us-east-1b" as AZB #FFFFFF {
+    rectangle "Pública 10.0.1.0/24\nRT: 0.0.0.0/0 → IGW" as PUBB #E3F3E7 {
+      node "ALB (nodo b)" as ALBB
+      node "NAT Gateway b" as NATB
+    }
+    rectangle "Privada app 10.0.11.0/24\nRT: 0.0.0.0/0 → NAT b" as APPB #EAF0FA {
+      node "EC2 API b (Docker)\nsg-app" as EC2B
+    }
+    rectangle "Privada datos 10.0.21.0/24\nRT: solo local" as DATB #FBE4E2 {
+      database "RDS standby\nMulti-AZ" as RDSB
+    }
+  }
+  node "VPC Endpoints (gateway)\nS3 · DynamoDB" as VPCE
+}
+
+rectangle "Servicios regionales" as REG #F3EEFB {
+  database "DynamoDB\neventos_auditoria" as DDB
+  node "S3 documentos\nSSE-KMS" as S3D
+  node "Secrets Manager · KMS\nCloudWatch · CloudTrail" as SOP
+}
+
+PC --> R53 : DNS
+PDA --> R53
+PC --> CF : HTTPS 443
+PDA --> CF : HTTPS 443
+PC ..> COG : login + MFA
+CF --> S3F : estático
+CF --> IGW : /api/* HTTPS 443
+IGW --> ALBA
+IGW --> ALBB
+ALBA --> EC2A : TCP 8000
+ALBB --> EC2B : TCP 8000
+EC2A --> RDSA : TCP 5432 TLS
+EC2B --> RDSA : TCP 5432 TLS
+RDSA ..> RDSB : réplica síncrona
+EC2A --> NATA : salida 443
+EC2B --> NATB : salida 443
+EC2A --> VPCE
+EC2B --> VPCE
+VPCE --> DDB
+VPCE --> S3D
+EC2A ..> SOP : secretos, métricas
+@enduml

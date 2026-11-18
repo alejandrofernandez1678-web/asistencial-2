@@ -1,0 +1,252 @@
+@startuml 09_mer
+!include estilo.iuml
+skinparam LineType ortho
+skinparam nodesep 35
+skinparam ranksep 45
+hide circle
+hide stereotype
+mainframe **Modelo entidad-relación** PostgreSQL (notación pata de gallo) · ⚙ = campos de control · ⌫ = baja lógica · rojo = solo inserción · ámbar = planificada (Sprint 4)
+
+skinparam class {
+  HeaderBackgroundColor<<nuevo>> #CDEBDD
+  HeaderBackgroundColor<<inmutable>> #FBE4E2
+  HeaderBackgroundColor<<outbox>> #EEE8FA
+  HeaderBackgroundColor<<planificada>> #FDF1D6
+  BorderColor<<planificada>> #8A5A00
+}
+
+entity roles {
+  * id_rol <<PK>>
+  --
+  * nombre <<UQ>>
+  descripcion
+}
+entity usuarios {
+  * id_usuario <<PK>>
+  --
+  * rut <<UQ>>
+  * nombre
+  * password_hash
+  pin_hash
+  * id_rol <<FK>>
+  ultimo_acceso
+  intentos_fallidos
+  bloqueado_hasta
+  ..
+  ⚙ creado_en · creado_por
+  ⚙ actualizado_en · actualizado_por
+  ⌫ activo · fecha_baja
+  ⌫ baja_por · motivo_baja
+}
+entity programas_salud {
+  * id_programa <<PK>>
+  --
+  * nombre <<UQ>>
+  es_ges
+  ..
+  ⚙ campos de control
+}
+entity pacientes {
+  * id_paciente <<PK>>
+  --
+  * rut_hmac <<UQ>>
+  * rut_enmascarado
+  * nombre
+  fecha_nacimiento
+  tramo_fonasa
+  ..
+  ⚙ campos de control
+}
+entity pacientes_programas {
+  * id_paciente <<PK,FK>>
+  * id_programa <<PK,FK>>
+  --
+  * fecha_ingreso
+}
+entity medicamentos {
+  * id_medicamento <<PK>>
+  --
+  * codigo <<UQ>>
+  * nombre
+  * unidades_envase (> 0)
+  es_controlado
+  tipo_control
+  umbral_critico (≥ 0)
+  id_programa <<FK>>
+  ..
+  ⚙ campos de control
+  ⌫ activo · fecha_baja
+  ⌫ baja_por · motivo_baja
+}
+entity ubicaciones {
+  * id_ubicacion <<PK>>
+  --
+  * codigo <<UQ>>
+  * tipo
+  ..
+  ⚙ campos de control
+  ⌫ activo · fecha_baja
+  ⌫ baja_por · motivo_baja
+}
+entity lotes {
+  * id_lote <<PK>>
+  --
+  * id_medicamento <<FK>>
+  * codigo_lote
+  * fecha_vencimiento
+  * unidades_ingresadas (> 0)
+  * unidades_disp (≥ 0)
+  * id_ubicacion <<FK>>
+  id_detalle_remesa <<FK>>
+  * estado (DISPONIBLE | ALERTA_SANITARIA | MERMA | ANULADO)
+  fecha_anulacion
+  anulado_por <<FK>>
+  motivo_anulacion
+  ..
+  ⚙ campos de control
+}
+entity remesas <<planificada>> {
+  * id_remesa <<PK>>
+  --
+  * nro_guia <<UQ>>
+  orden_compra
+  * fecha_recepcion
+  * id_usuario_recibe <<FK>>
+  * estado (ABIERTA | CONCILIADA | ANULADA)
+  ..
+  ⚙ campos de control
+}
+entity detalles_remesa <<planificada>> {
+  * id_detalle_remesa <<PK>>
+  --
+  * id_remesa <<FK>>
+  * id_medicamento <<FK>>
+  * cant_esperada (> 0)
+  * cant_recibida (≥ 0)
+  ..
+  ⚙ campos de control
+}
+entity movimientos_stock <<inmutable>> {
+  * id_movimiento <<PK>>
+  --
+  * id_lote <<FK>>
+  * tipo (INGRESO | DISPENSACION |
+  ANULACION_DISPENSACION | MERMA |
+  AJUSTE | ANULACION_LOTE)
+  * cantidad (≠ 0)
+  * saldo_resultante (≥ 0)
+  referencia_tipo · referencia_id
+  motivo
+  * id_usuario <<FK>>
+  * fecha_hora
+}
+entity mermas {
+  * id_merma <<PK>>
+  --
+  * id_lote <<FK>>
+  * id_usuario <<FK>>
+  * cantidad (> 0)
+  * motivo
+  observacion
+  estado_devolucion
+  ..
+  ⚙ campos de control
+}
+entity recetas {
+  * id_receta <<PK>>
+  --
+  * folio <<UQ>>
+  * id_paciente <<FK>>
+  * fecha_emision
+  es_retenida
+  * estado (PENDIENTE | PARCIAL |
+  DISPENSADA | ANULADA)
+  ..
+  ⚙ campos de control
+}
+entity detalles_receta {
+  * id_detalle_receta <<PK>>
+  --
+  * id_receta <<FK>>
+  * id_medicamento <<FK>>
+  * cant_prescrita (> 0)
+  * cant_entregada (≤ prescrita)
+  * posologia
+  ..
+  ⚙ campos de control
+}
+entity dispensaciones {
+  * id_dispensacion <<PK>>
+  --
+  * id_receta <<FK>>
+  * id_usuario <<FK>>
+  id_usuario_autoriza <<FK>>
+  rut_retira_hmac
+  relacion
+  * fecha_hora
+  * clave_idempotencia <<UQ>>
+  * estado (VIGENTE | ANULADA)
+  fecha_anulacion
+  anulada_por <<FK>>
+  motivo_anulacion
+  ..
+  ⚙ campos de control
+}
+entity detalles_dispensacion {
+  * id_detalle_disp <<PK>>
+  --
+  * id_dispensacion <<FK>>
+  * id_detalle_receta <<FK>>
+  * id_lote <<FK>>
+  * cantidad (> 0)
+  ..
+  ⚙ campos de control
+}
+entity asientos_controlados <<inmutable>> {
+  * id_asiento <<PK>>
+  --
+  * nro_asiento <<UQ>>
+  * tipo (SALIDA | RECTIFICACION)
+  * id_detalle_disp <<FK>>
+  id_asiento_origen <<FK>>
+  * id_usuario_qf <<FK>>
+  * fecha_hora
+  * contenido (JSON)
+  * hash_previo
+  * hash_actual <<UQ>>
+}
+entity eventos_pendientes <<outbox>> {
+  * id_evento <<PK>>
+  --
+  id_usuario <<FK>>
+  * tipo_evento
+  * entidad · id_entidad
+  * payload (JSON)
+  * creado_en
+  publicado_en
+}
+
+roles ||--o{ usuarios
+usuarios ||--o{ eventos_pendientes
+programas_salud ||--o{ pacientes_programas
+pacientes ||--o{ pacientes_programas
+programas_salud |o--o{ medicamentos
+pacientes ||--o{ recetas
+recetas ||--|{ detalles_receta
+medicamentos ||--o{ detalles_receta
+medicamentos ||--o{ lotes
+ubicaciones ||--o{ lotes
+usuarios ||--o{ remesas
+remesas ||--|{ detalles_remesa
+medicamentos ||--o{ detalles_remesa
+detalles_remesa |o--o{ lotes
+lotes ||--|{ movimientos_stock
+lotes ||--o{ mermas
+recetas ||--o{ dispensaciones
+usuarios ||--o{ dispensaciones
+dispensaciones ||--|{ detalles_dispensacion
+detalles_receta ||--o{ detalles_dispensacion
+lotes ||--o{ detalles_dispensacion
+detalles_dispensacion ||--o{ asientos_controlados
+asientos_controlados |o--o| asientos_controlados
+@enduml

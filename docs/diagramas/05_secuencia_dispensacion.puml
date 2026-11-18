@@ -1,0 +1,54 @@
+@startuml 05_secuencia_dispensacion
+!include estilo.iuml
+skinparam LineType polyline
+autonumber
+mainframe **sd** Dispensación con validación FEFO (vista de procesos)
+
+actor "Técnico" as T
+participant "Interfaz web\n(React)" as UI
+participant "API REST\n(FastAPI)" as API
+participant "Dispensación\nService" as SVC
+participant "Planificador\nFEFO" as FEFO
+database "PostgreSQL" as DB
+participant "Publicador de\nauditoría" as PUB
+database "DynamoDB" as DDB
+
+T -> UI : ingresa RUT
+UI -> API : POST /api/pacientes/buscar {rut}\n(Bearer JWT)
+API -> API : validar JWT y permiso DISPENSAR
+API -> DB : SELECT paciente por HMAC(rut) y recetas
+DB --> API : paciente + recetas
+API --> UI : 200 OK
+
+T -> UI : selecciona receta y cantidad
+UI -> API : GET /api/dispensaciones/plan
+API -> SVC : planificarLinea(detalle, cantidad)
+SVC -> DB : SELECT lotes ORDER BY vencimiento
+SVC -> FEFO : planificar(lotes, cantidad, hoy)
+FEFO --> SVC : plan (lote y casillero)
+SVC --> UI : plan FEFO
+
+T -> UI : escanea lote y confirma
+UI -> API : POST /api/dispensaciones\n{lineas, lotes_escaneados, clave_idempotencia}
+API -> SVC : dispensar(...)
+SVC -> DB : BEGIN · buscar clave_idempotencia
+SVC -> DB : SELECT receta y lotes FOR UPDATE
+SVC -> FEFO : validarLoteEscaneado(codigo, plan)
+alt lote distinto al plan o por vencer
+  FEFO --> SVC : ReglaNegocioError(FEFO)
+  SVC -> DB : ROLLBACK
+  API --> UI : 422 {codigo, detalle: lote y casillero correctos}
+else lote correcto
+  SVC -> DB : INSERT dispensación y detalles\nUPDATE lotes · INSERT movimientos_stock
+  opt receta con controlado
+    SVC -> DB : INSERT asiento (hash encadenado)
+  end
+  SVC -> DB : INSERT eventos_pendientes · COMMIT
+  API --> UI : 201 Created + rótulos
+end
+
+== Proceso asíncrono (patrón outbox) ==
+PUB -> DB : leer eventos_pendientes
+PUB -> DDB : PutItem(evento)
+PUB -> DB : marcar publicado_en
+@enduml

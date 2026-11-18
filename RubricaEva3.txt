@@ -1,0 +1,136 @@
+Rúbrica
+3.1.1.1. Coherencia entre la funcionalidad de la interfaz y las necesidades del negocio.	
+Destacado: Las interfaces implementan el 100% de los procesos requeridos, reflejando claramente las necesidades del negocio, con diseño intuitivo y atractivo.
+5 puntos
+Habilitado: Las interfaces cubren la mayoría de los procesos requeridos, con diseño funcional y claro.
+3.65 puntos
+En desarrollo: Las interfaces reflejan parcialmente las necesidades del negocio y requieren ajustes funcionales o estéticos significativos
+1.95 puntos
+No logrado: Las interfaces no reflejan las necesidades del negocio o presentan errores importantes en funcionalidad o diseño.
+0 puntos
+3.1.1.2. Cumplimiento de lineamientos estéticos y funcionales.	
+Destacado: Las interfaces cumplen a cabalidad con los lineamientos estéticos y funcionales establecidos, manteniendo consistencia y originalidad.
+5 puntos
+Habilitado: Las interfaces cumplen mayoritariamente con los lineamientos estéticos y funcionales, con ligeros detalles por mejorar.
+3.65 puntos
+En desarrollo: Las interfaces cumplen parcialmente con los lineamientos, mostrando deficiencias en consistencia o funcionalidad.
+1.95 puntos
+No logrado: Las interfaces no cumplen con los lineamientos estéticos y funcionales establecidos.
+0 puntos
+.3. Estructura adecuada de la base de datos.	
+Destacado: La estructura de la base de datos es óptima, incluye relaciones correctas, índices y modelos eficientes para cada tipo de datos.
+5 puntos
+Habilitado: La estructura de la base de datos es funcional y cumple con los requisitos básicos del sistema.
+3.65 puntos
+En desarrollo: La estructura de la base de datos presenta deficiencias menores que afectan su eficiencia o funcionalidad.
+1.95 puntos
+No logrado: La estructura de la base de datos no cumple con los requerimientos del sistema o presenta errores graves.
+0 puntos
+.4. Optimización y normalización.	
+Destacado: Las bases de datos cumplen con principios avanzados de normalización y optimización, asegurando un rendimiento excelente.
+5 puntos
+Habilitado: Las bases de datos cumplen con principios básicos de normalización y optimización, asegurando un rendimiento adecuado.
+3.65 puntos
+En desarrollo: Las bases de datos presentan problemas de redundancia o falta de optimización que afectan su funcionalidad.
+1.95 puntos
+No logrado: Las bases de datos no están normalizadas ni optimizadas, dificultando su rendimiento y uso.
+0 puntos
+3.1.3.5. Implementación de patrones de seguridad	
+Destacado: El código implementa múltiples patrones de seguridad avanzados y protege contra vulnerabilidades conocidas.
+5 puntos
+Habilitado: El código incluye patrones de seguridad básicos que protegen contra las vulnerabilidades más comunes.
+3.65 puntos
+En desarrollo: El código incluye medidas de seguridad mínimas, pero deja ciertas vulnerabilidades sin atender.
+1.95 puntos
+No logrado: El código carece de medidas de seguridad o presenta vulnerabilidades graves.
+0 puntos
+3.1.3.6. Colaboración en equipo	
+Destacado: La programación refleja una excelente adaptación a las dinámicas del equipo, incluyendo documentación y contribuciones relevantes.
+5 puntos
+Habilitado: La programación muestra una adecuada adaptación al equipo, con documentación funcional y participación activa.
+3.65 puntos
+En desarrollo: La programación refleja una integración limitada con el equipo, requiriendo mayor colaboración o documentación.
+1.95 puntos
+No logrado: La programación no refleja adaptación a las dinámicas del equipo ni incluye documentación adecuada.
+0 puntos
+3.1.4.7. Configuración del entorno de trabajo.	
+Destacado: La configuración del entorno es completamente funcional, eficiente y documentada paso a paso.
+10 puntos
+Habilitado: La configuración del entorno es funcional y cubre los aspectos necesarios para la operación básica del sistema.
+7.3 puntos
+En desarrollo: La configuración del entorno presenta errores o es incompleta, afectando la funcionalidad del sistema.
+3.9 puntos
+No logrado: La configuración del entorno no permite la operación del sistema.
+0 puntos
+3.1.4.8. Documentación de la implementación.	
+Destacado: La implementación está completamente documentada, facilitando su repetición y mantenimiento.
+5 puntos
+Habilitado: La documentación de la implementación es funcional, aunque con detalles menores por mejorar.
+3.65 puntos
+En desarrollo: La documentación de la implementación es incompleta o difícil de seguir.
+1.95 puntos
+No logrado: No existe documentación sobre la implementación.
+0 puntos
+3.1.5.9. Cobertura del plan de pruebas.	
+Destacado: El plan de pruebas cubre el 100% de los casos de uso y escenarios posibles, incluyendo pruebas de borde y estrés.
+10 puntos
+Habilitado: El plan de pruebas cubre la mayoría de los casos de uso y escenarios principales.
+7.3 puntos
+En desarrollo: El plan de pruebas cubre parcialmente los casos de uso, dejando de lado escenarios importantes.
+3.9 puntos
+No logrado: El plan de pruebas no cubre los casos de uso relevantes o es inexistente.
+0 puntos
+3.1.5.10. Ejecución del protocolo de pruebas.	
+Destacado: Las pruebas se ejecutan siguiendo el protocolo definido, documentando resultados de forma exhaustiva y precisa.
+10 puntos
+Habilitado: Las pruebas se ejecutan siguiendo el protocolo definido, aunque con documentación mínima.
+7.3 puntos
+En desarrollo: Las pruebas se ejecutan parcialmente o de manera inconsistente con el protocolo definido.
+3.9 puntos
+No logrado: Las pruebas no se ejecutan o no siguen un protocolo definido.
+0 puntos
+3.1.5.11. Validación de resultados.	
+Destacado: Los resultados de las pruebas son completamente analizados y validados, incluyendo recomendaciones para mejoras.
+10 puntos
+Habilitado: Los resultados de las pruebas son analizados y validados, aunque con observaciones menores.
+7.3 puntos
+En Desarrollo: Los resultados de las pruebas son parcialmente analizados, dejando dudas sobre su validez.
+3.9 puntos
+No Logrado: Los resultados de las pruebas no son analizados ni validados.
+0 puntos
+3.1.6.12. Precisión en la comparación de resultados obtenidos versus resultados esperados.	
+Destacado: Se identifican y documentan con precisión todas las discrepancias entre los resultados obtenidos y esperados, incluyendo análisis detallados y posibles causas.
+10 puntos
+Habilitado: Se identifican y documentan la mayoría de las discrepancias entre los resultados obtenidos y esperados, con análisis funcionales.
+7.3 puntos
+En desarrollo: Se identifican algunas discrepancias entre los resultados obtenidos y esperados, pero la documentación o análisis es incompleto.
+3.9 puntos
+No logrado: No se identifican ni documentan las discrepancias entre los resultados obtenidos y esperados.
+0 puntos
+3.1.6.13. Generación de recomendaciones basadas en la comparación de resultados.	
+Destacado: Las recomendaciones derivadas de la comparación son precisas, detalladas y orientadas a la mejora continua de la solución.
+5 puntos
+Habilitado: Las recomendaciones derivadas son claras y funcionales, aunque pueden ser mejoradas en detalle o alcance.
+3.65 puntos
+En desarrollo: Las recomendaciones derivadas son generales y no abordan de manera específica las discrepancias detectadas.
+1.95 puntos
+No logrado: No se generan recomendaciones basadas en la comparación de resultados.
+0 puntos
+3.1.6.14. Respuesta a preguntas	
+Destacado: Responde a las preguntas del profesor de manera clara, precisa y con fundamentos sólidos.
+5 puntos
+Habilitado: Responde a las preguntas del profesor de manera adecuada, aunque con algunas imprecisiones menores.
+3.65 puntos
+En Desarrollo: Responde a las preguntas del profesor de manera general, con varias imprecisiones.
+1.95 puntos
+No logrado: No responde adecuadamente a las preguntas del profesor.
+0 puntos
+3.1.6.15. Elaboración Informe final	
+Destacado: El documento cumple completamente con el formato establecido base, incluyendo todos los elementos requeridos y siguiendo las pautas y especificaciones proporcionadas. El diseño refleja una atención meticulosa a los detalles y está en línea con los estándares de proyectos profesionales
+5 puntos
+Habilitado: El documento cumple en gran medida con el formato establecido base, aunque puede haber algunos elementos faltantes o pequeñas desviaciones en relación con las pautas proporcionadas. El diseño es coherente y sigue en gran medida los estándares de proyectos profesionales
+3.65 puntos
+En desarrollo: El documento cumple parcialmente con el formato establecido base, pero pueden haber varias desviaciones o elementos faltantes en relación con las pautas proporcionadas. Se requiere un mayor esfuerzo para alcanzar los estándares de proyectos profesionales
+1.95 puntos
+No logrado: El documento no cumple con el formato establecido base o se desvía significativamente de las pautas proporcionadas. Hay deficiencias significativas que afecta la presentación y comprensión del contenido
+0 puntos

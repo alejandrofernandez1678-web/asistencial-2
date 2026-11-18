@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sisgef",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-c", "import os, uvicorn; os.chdir('backend'); uvicorn.run('app.main:app', app_dir='.', host='127.0.0.1', port=int(os.environ.get('PORT', 8000)), reload=True)"],
+      "port": 8000
+    }
+  ]
+}

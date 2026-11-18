@@ -1,0 +1,52 @@
+@startuml 06_componentes
+!include estilo.iuml
+skinparam LineType polyline
+mainframe **cmp** Componentes e interfaces (vista de desarrollo)
+
+package "«subsystem» Frontend web (React)" {
+  [Pantallas\n(Panel, Dispensar, Lotes,\nMedicamentos, Entregas, Libro,\nUsuarios, Auditoría)] as UIP
+  [Cliente API] as CLI
+  UIP --> CLI
+}
+
+package "«subsystem» Backend API (FastAPI)" {
+  interface IRestAPI
+  [API REST\n(routers + esquemas)] as API
+  [Seguridad\n(JWT, RBAC, PBKDF2)] as SEG
+  [Dispensación] as DIS
+  [Inventario] as INV
+  [Catálogo y usuarios] as CAT
+  interface IReglas
+  [Dominio\n(FEFO, estados, RUT,\nrecetas, libro hash)] as DOM
+  interface IRepositorio
+  [Repositorios\n(SQLAlchemy)] as REP
+  [Publicador de auditoría\n(planificado)] as PUB
+
+  API -up- IRestAPI
+  API ..> SEG : <<use>>
+  API --> DIS
+  API --> INV
+  API --> CAT
+  DOM -up- IReglas
+  DIS ..> IReglas : <<use>>
+  INV ..> IReglas : <<use>>
+  CAT ..> IReglas : <<use>>
+  REP -up- IRepositorio
+  DIS ..> IRepositorio : <<use>>
+  INV ..> IRepositorio : <<use>>
+  PUB ..> IRepositorio : lee pendientes
+}
+
+package "Servicios externos" {
+  database "PostgreSQL 16\n(RDS)" as PG
+  database "DynamoDB" as DDB
+  [Amazon S3] as S3
+  [Amazon Cognito] as COG
+}
+
+CLI ..> IRestAPI : <<use>>\nHTTPS/JSON
+REP ..> PG : SQL / TLS
+PUB ..> DDB
+SEG ..> COG : OIDC (planificado)
+REP ..> S3 : documentos
+@enduml

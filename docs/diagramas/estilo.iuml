@@ -1,0 +1,103 @@
+' Estilo común de los diagramas SISGEF-Asistencial (paleta de la guía de estilo, Tabla 16).
+' Si Graphviz no está instalado, renderizar.sh define SISGEF_SMETANA=1 y se usa el motor interno.
+!if %getenv("SISGEF_SMETANA") == "1"
+!pragma layout smetana
+!endif
+
+skinparam dpi 150
+skinparam shadowing false
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam ArrowColor #44545A
+skinparam ArrowFontSize 11
+skinparam ArrowFontColor #14303A
+skinparam LineType ortho
+
+skinparam frame {
+  BorderColor #14303A
+  FontStyle bold
+}
+skinparam package {
+  BorderColor #0E7C66
+  BackgroundColor #F7F9F8
+  FontColor #0E7C66
+  FontStyle bold
+}
+skinparam rectangle {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+}
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #14303A
+  HeaderBackgroundColor #DCEFE9
+  FontColor #14303A
+  FontStyle bold
+  FontSize 13
+  AttributeFontColor #14303A
+  AttributeFontSize 11
+  StereotypeFontColor #0E7C66
+}
+hide circle
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #0E7C66
+skinparam stereotypeEBackgroundColor #8A5A00
+skinparam actor {
+  BorderColor #14303A
+  BackgroundColor #E3F3E7
+}
+skinparam usecase {
+  BorderColor #0E7C66
+  BackgroundColor #E8F4F0
+}
+skinparam state {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+  StartColor #14303A
+  EndColor #14303A
+}
+skinparam activity {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+  DiamondBorderColor #8A5A00
+  DiamondBackgroundColor #FDF1D6
+  BarColor #14303A
+}
+skinparam swimlane {
+  BorderColor #9AA9AD
+  TitleFontStyle bold
+}
+skinparam sequence {
+  LifeLineBorderColor #9AA9AD
+  ParticipantBorderColor #14303A
+  ParticipantBackgroundColor #14303A
+  ParticipantFontColor #FFFFFF
+  ActorBorderColor #14303A
+  GroupBorderColor #0E7C66
+  GroupHeaderFontColor #0E7C66
+}
+skinparam component {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+}
+skinparam interface {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+}
+skinparam node {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+}
+skinparam database {
+  BorderColor #14303A
+  BackgroundColor #FFFFFF
+}
+skinparam note {
+  BorderColor #8A5A00
+  BackgroundColor #FDF1D6
+}
+skinparam entity {
+  BackgroundColor #FFFFFF
+  BorderColor #14303A
+}
